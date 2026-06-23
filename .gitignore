@@ -1,0 +1,14 @@
+# Entorno virtual de Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Datos locales del Data Lake (Metadatos y tablas Delta)
+data/
+.ivy2/
+metastore_db/
+derby.log
+
+# Configuraciones de VS Code
+.vscode/
