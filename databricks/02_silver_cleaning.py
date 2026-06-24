@@ -8,7 +8,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import * 
 
-# Inicializar Spark Session con soporte para Delta Lake
+# Start a Spark Session with support for Delta Lake
 spark = SparkSession.builder \
     .appName("SilverCleaning") \
     .config("spark.jars.packages", "io.delta:delta-spark_2.12:3.2.0") \
@@ -18,6 +18,7 @@ spark = SparkSession.builder \
 
 # Read from Bronze layer
 df_bronze = spark.read.format("delta").load('./data/datalake/bronze/retail_sales')
+
 
 # --- 1. Data cleaning ---
 # Turn Date to date type
@@ -59,16 +60,23 @@ df_silver = df_silver.withColumn("Year", year(col("Date"))) \
               .when(col("Age") < 55, "45-54")
               .otherwise("55+")
 )
+df_silver.show(10, truncate=False)
 
 # --- 4. Data quality: register rejected records
-# Identify records that didn't passed the filters
+# Identify records that didn't pass the filters
 df_rejected = df_bronze.join(df_silver, ["Transaction_ID"], "left_anti")
+
+# ¡CRUCIAL! Save CLEAN & TRANSFORMED recordsin the path Silver
+df_silver.write \
+  .format("delta") \
+  .mode("overwrite") \
+  .save('./data/datalake/silver/retail_sales')
 
 # Save rejected records for auditing
 df_rejected.write \
   .format("delta") \
   .mode("append") \
-  .save('./data/datalake/silver/retail_sales')
+  .save('./data/datalake/silver/rejected_sales')
 
 # Assure the db existance/local scheme
 spark.sql("CREATE DATABASE IF NOT EXISTS silver")
