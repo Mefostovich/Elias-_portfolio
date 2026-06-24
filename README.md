@@ -1,4 +1,3 @@
-# Elias-_portfolio
 # 🏪 Retail Sales Data Pipeline
 
 ## Project Overview
