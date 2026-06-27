@@ -1,0 +1,26 @@
+{
+  "name": "Data Pipeline Dev Container",
+  "image": "://microsoft.com",
+  // Instala Java 17 de forma nativa en el contenedor al arrancar
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "jdkDistro": "openlogic"
+    }
+  },
+  // Configura las variables de entorno de forma persistente
+  "containerEnv": {
+    "JAVA_HOME": "/usr/lib/jvm/msopenjdk-current"
+  },
+  // Instala tus extensiones favoritas automáticamente
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ]
+    }
+  },
+  // Instala PySpark y dependencias en el sistema apenas se cree el entorno
+  "postCreateCommand": "pip install --upgrade pip && pip install pyspark==3.5.1 delta-spark==3.2.0 pandas kagglehub"
+}
